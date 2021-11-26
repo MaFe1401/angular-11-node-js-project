@@ -1,0 +1,15 @@
+<div class="container">
+    <p>La votación consiste en repartir 10 puntos entre los tres posibles candidatos.</p>
+    <div class="papeleta">
+        <h1>VOTO</h1>
+        <input type="number" pattern="[0-9]" id="c1" name="c1" #c1 placeholder="CANDIDATO 1">
+        <input type="number" pattern="[0-9]" step = "1" id="c2" name="c2" #c2 placeholder="CANDIDATO 2">
+        <input type="number" pattern="[0-9]" step = "1" id="c3" name="c3" #c3 placeholder="CANDIDATO 3">
+        <button type="button" (click)="clickme(c1.value, c2.value, c3.value)">VOTAR!</button>
+    </div>
+</div>
+
+ 
+
+
+
