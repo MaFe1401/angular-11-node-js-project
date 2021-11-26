@@ -1,0 +1,5 @@
+<div>
+    <h1>Send a message</h1>
+    <input type="number" pattern="[0-9]+" id="message" name="message" #message placeholder="message">
+    <button type="button" (click)="clickEncrypt(message.value)">Send </button>
+</div>

@@ -2,7 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './components/pages/home/home.component';
 
-const routes: Routes = [{ path: 'home', component: HomeComponent },{path: '', redirectTo: 'home', pathMatch: 'full'}
+const routes: Routes = [{ path: 'home', component: HomeComponent },{path: '', redirectTo: 'home', pathMatch: 'full'},
+{ path: 'rsa', loadChildren: () => import('./components/pages/rsa/rsa.module').then(m => m.RsaModule) }
 ];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

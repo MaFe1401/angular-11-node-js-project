@@ -29,7 +29,9 @@ export class HomeComponent implements OnInit{
       this.publicKey = new paillierBigint.PublicKey(bigintConversion.base64ToBigint(json['n']), bigintConversion.base64ToBigint(json['g']))
       }
     }
-
+    rsaClick(){
+        this.router.navigateByUrl('/rsa');
+    };
   async clickme(c1:string, c2:string, c3:string) {
     if(c1.includes("-") || c1.includes(".") || c1.includes(",") || c2.includes("-") || c2.includes(".") || c2.includes(",") ||c3.includes("-") || c3.includes(".") || c3.includes(",")){
       alert("No se permiten números decimales ni negativos.")
