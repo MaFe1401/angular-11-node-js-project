@@ -25,14 +25,17 @@ export class RsaComponent implements OnInit {
     req.send(null);
     if(req.status == 200){
       let json = JSON.parse(req.response)
-      this.publicKey = new myrsa.PublicKey(bigintConversion.base64ToBigint(json['n']), bigintConversion.base64ToBigint(json['e']))
+      this.publicKey = new myrsa.PublicKey(bigintConversion.base64ToBigint(json['e']),bigintConversion.base64ToBigint(json['n']))
+      console.log(this.publicKey.n+"$$$$"+this.publicKey.e)
       }
     }
     clickEncrypt(message: string): void {
+      console.log(message)
       let encryptedMessage = this.publicKey.encrypt(BigInt(message))
       let json = {
         message: bigintConversion.bigintToBase64(encryptedMessage)
       }
+      console.log(encryptedMessage)
       console.log(bigintConversion.bigintToBase64(encryptedMessage))
       let url = 'http://localhost:3000/decryptRSA'
       this.http.post(url,json).toPromise().then((data:any) => {

@@ -23,8 +23,9 @@ app.post('/vote', (req, res) => {
 })
 app.post('/decryptRSA', (req,res) =>{
   console.log(req.body.message)
+  console.log(bigintConversion.base64ToBigint(req.body.message))
   console.log("Message: "+privKey.decrypt(bigintConversion.base64ToBigint(req.body.message)))
-  res.send("received and decrypted");
+  res.json("received and decrypted");
 })
 
 app.post("/usuario", async (req, res) => {
@@ -50,6 +51,7 @@ app.get('/getRSAkey', (req,res) => {
         e:bigintConversion.bigintToBase64(pubKey.e),
 
   }
+  console.log(pubKey.n+"$$$$$"+pubKey.e)
   res.json(response)
 })
 //Listen requests
