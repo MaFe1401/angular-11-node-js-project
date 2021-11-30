@@ -1,5 +1,10 @@
 <div>
     <h1>Send a message</h1>
-    <input type="number" pattern="[0-9]+" id="message" name="message" #message placeholder="message">
+    <input type="text" id="message" name="message" #message placeholder="message">
     <button type="button" (click)="clickEncrypt(message.value)">Send </button>
+</div>
+<div>
+    <h1>Ask the server to sign this text</h1>
+    <input type="text" id="text" name="text" #text placeholder="text">
+    <button type="button" (click)="askRSASignedMsg(text.value)">Send </button>
 </div>

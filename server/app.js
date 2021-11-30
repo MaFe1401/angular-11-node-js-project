@@ -24,8 +24,8 @@ app.post('/vote', (req, res) => {
 app.post('/decryptRSA', (req,res) =>{
   console.log(req.body.message)
   console.log(bigintConversion.base64ToBigint(req.body.message))
-  console.log("Message: "+privKey.decrypt(bigintConversion.base64ToBigint(req.body.message)))
-  res.json("received and decrypted");
+  console.log("Message: "+bigintConversion.bigintToText(privKey.decrypt(bigintConversion.base64ToBigint(req.body.message))))
+  res.json("received and decrypted:");
 })
 
 app.post("/usuario", async (req, res) => {
@@ -51,7 +51,21 @@ app.get('/getRSAkey', (req,res) => {
         e:bigintConversion.bigintToBase64(pubKey.e),
 
   }
-  console.log(pubKey.n+"$$$$$"+pubKey.e)
+  console.log(response.n)
+  console.log(bigintConversion.base64ToBigint(response.n)+"$$$$$"+pubKey.e)
+  res.json(response)
+})
+//Firmar texto
+app.post('/signText', (req,res)=>{
+  console.log("Texto: "+req.body.text)
+  let signed = privKey.verify( bigintConversion.textToBigint(req.body.text))
+  console.log("Firma (en bigint): "+signed)
+  console.log("Firma (en base64): "+bigintConversion.bigintToBase64(signed))
+  
+  let response = {
+    signed: bigintConversion.bigintToBase64(signed)
+  }
+  //console.log(bigintConversion.bigintToBase64(signed))
   res.json(response)
 })
 //Listen requests
