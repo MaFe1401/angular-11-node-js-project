@@ -26,7 +26,7 @@ export class HomeComponent implements OnInit{
     req.send(null);
     if(req.status == 200){
       let json = JSON.parse(req.response)
-      this.publicKey = new paillierBigint.PublicKey(bigintConversion.base64ToBigint(json['n']), bigintConversion.base64ToBigint(json['g']))
+      this.publicKey = new paillierBigint.PublicKey(bigintConversion.hexToBigint(json['n']), bigintConversion.hexToBigint(json['g']))
       }
     }
     rsaClick(){
@@ -57,13 +57,6 @@ export class HomeComponent implements OnInit{
             voto2: bigintConversion.bigintToBase64(enc2),
             voto3: bigintConversion.bigintToBase64(enc3)
           }
-          /*
-          var req = new XMLHttpRequest();
-          req.open('POST', 'localhost:3000/vote', false);
-          req.setRequestHeader("Content-Type", "application/json");
-          req.send(JSON.stringify(json));
-          alert("VOTE SENT!!")
-          */
           let url = 'http://localhost:3000/vote'
           this.http.post(url,json).toPromise().then((data:any) => {
           })

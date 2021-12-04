@@ -16,5 +16,8 @@
     "express": "^4.17.1",
     "my-rsa": "file:../moduleAdapter-skel",
     "paillier-bigint": "^3.2.5"
+  },
+  "devDependencies": {
+    "ts-standard": "^11.0.0"
   }
 }

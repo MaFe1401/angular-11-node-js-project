@@ -38,8 +38,8 @@ app.post("/usuario", async (req, res) => {
 //Get Paillier public key
 app.get('/getPkey', (req, res) => {
   let response = {
-          n: bigintConversion.bigintToBase64(publicKey.n),
-          g: bigintConversion.bigintToBase64(publicKey.g),
+          n: bigintConversion.bigintToHex(publicKey.n),
+          g: bigintConversion.bigintToHex(publicKey.g),
 }
   res.json(response)
 })
@@ -47,23 +47,25 @@ app.get('/getPkey', (req, res) => {
 app.get('/getRSAkey', (req,res) => {
 
   let response = {
-        n:bigintConversion.bigintToBase64(pubKey.n),
-        e:bigintConversion.bigintToBase64(pubKey.e),
+        n:bigintConversion.bigintToHex(pubKey.n),
+        e:bigintConversion.bigintToHex(pubKey.e),
 
   }
   console.log(response.n)
-  console.log(bigintConversion.base64ToBigint(response.n)+"$$$$$"+pubKey.e)
+  console.log(bigintConversion.hexToBigint(response.n)+"$$$$$"+pubKey.e)
   res.json(response)
 })
 //Firmar texto
 app.post('/signText', (req,res)=>{
   console.log("Texto: "+req.body.text)
-  let signed = privKey.verify( bigintConversion.textToBigint(req.body.text))
+  const plaintext =  bigintConversion.textToBigint(req.body.text)
+  let signed = privKey.sign(plaintext)
+  console.log("plaintext (bigint)" + plaintext)
   console.log("Firma (en bigint): "+signed)
-  console.log("Firma (en base64): "+bigintConversion.bigintToBase64(signed))
+  console.log("Firma (en hex): "+bigintConversion.bigintToHex(signed))
   
   let response = {
-    signed: bigintConversion.bigintToBase64(signed)
+    signed: bigintConversion.bigintToHex(signed)
   }
   //console.log(bigintConversion.bigintToBase64(signed))
   res.json(response)

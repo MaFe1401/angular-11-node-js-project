@@ -25,10 +25,10 @@ export class RsaComponent implements OnInit {
     req.send(null);
     if(req.status == 200){
       let json = JSON.parse(req.response)
-      console.log(json['n'])
-      console.log(bigintConversion.base64ToBigint(json['n']))
-      this.publicKey = new myrsa.PublicKey(bigintConversion.base64ToBigint(json['e']), bigintConversion.base64ToBigint(json['n']))
-      console.log(bigintConversion.base64ToBigint(json['n'])+"$$$$"+bigintConversion.base64ToBigint(json['e']))
+      //console.log(json['n'])
+      //console.log(bigintConversion.hexToBigint(json['n']))
+      this.publicKey = new myrsa.PublicKey(bigintConversion.hexToBigint(json['e']), bigintConversion.hexToBigint(json['n']))
+      console.log(bigintConversion.hexToBigint(json['n'])+"$$$$"+bigintConversion.hexToBigint(json['e']))
       }
     }
     clickEncrypt(message: string): void {
@@ -52,12 +52,14 @@ export class RsaComponent implements OnInit {
       }
 
       this.http.post(url,json).toPromise().then((data:any) => {
-        console.log("Firma (en base64): "+data['signed'])
-        let signed = bigintConversion.base64ToBigint(data['signed'])
+        console.log("Firma (en hex): "+data['signed'])
+        let signed = bigintConversion.hexToBigint(data['signed'])
         console.log("Firma (en bigint): "+signed)
-        let verificado = bigintConversion.bigintToText(this.publicKey.verify(bigintConversion.base64ToBigint(data['signed'])))
-        console.log("Texto: "+verificado)
-        if (verificado == text){
+        let verificado = this.publicKey.verify(signed)
+        console.log("Verificado: "+verificado)
+        const texto = bigintConversion.bigintToText(verificado)
+        console.log("texto: "+texto)
+        if (texto == text){
           alert("verificación OK")
         }
         else alert("verificación errónea")
