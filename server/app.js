@@ -2,6 +2,7 @@ const express = require('express')
 const paillierBigint = require('paillier-bigint')
 const bigintConversion = require('bigint-conversion')
 const myrsa = require('my-rsa')
+const bcu = require('bigint-crypto-utils')
 const app = express()
 const port = 3000
 const { publicKey, privateKey } = paillierBigint.generateRandomKeysSync(3072)
@@ -58,7 +59,7 @@ app.get('/getRSAkey', (req,res) => {
 //Firmar texto
 app.post('/signText', (req,res)=>{
   console.log("Texto: "+req.body.text)
-  const plaintext =  bigintConversion.textToBigint(req.body.text)
+  const plaintext =  bigintConversion.hexToBigint(req.body.text)
   let signed = privKey.sign(plaintext)
   console.log("plaintext (bigint)" + plaintext)
   console.log("Firma (en bigint): "+signed)

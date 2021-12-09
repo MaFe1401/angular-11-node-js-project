@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http'
 import * as paillierBigint from 'paillier-bigint'
 import * as bigintConversion from 'bigint-conversion'
+import * as bcu from 'bigint-crypto-utils'
 import { listenerCount } from 'process';
 import * as myrsa from 'my-rsa';
 
@@ -15,8 +16,10 @@ import * as myrsa from 'my-rsa';
 })
 export class RsaComponent implements OnInit {
   publicKey : myrsa.PublicKey;
+  r : bigint;
   constructor(private router: Router, private http: HttpClient) { 
     this.publicKey = new myrsa.PublicKey(BigInt(0), BigInt(0))
+    this.r = BigInt(0)
     }
 
   ngOnInit(): void {
@@ -29,6 +32,7 @@ export class RsaComponent implements OnInit {
       //console.log(bigintConversion.hexToBigint(json['n']))
       this.publicKey = new myrsa.PublicKey(bigintConversion.hexToBigint(json['e']), bigintConversion.hexToBigint(json['n']))
       console.log(bigintConversion.hexToBigint(json['n'])+"$$$$"+bigintConversion.hexToBigint(json['e']))
+      this.r = bcu.randBetween(this.publicKey.n, BigInt(128))
       }
     }
     clickEncrypt(message: string): void {
@@ -46,9 +50,9 @@ export class RsaComponent implements OnInit {
     }
     askRSASignedMsg(text: string):void {
       let url = 'http://localhost:3000/signText'
-      
+      let textBigint = bigintConversion.textToBigint(text)
       let json = {
-        text: text
+        text:bigintConversion.bigintToHex(textBigint)
       }
 
       this.http.post(url,json).toPromise().then((data:any) => {
@@ -65,6 +69,42 @@ export class RsaComponent implements OnInit {
         else alert("verificación errónea")
       })
     
+    }
+    askRSASignedBlindedMsg(texto: string):void {
+      let url = 'http://localhost:3000/signText'
+      
+      const blindedMessage = this.blinding(bigintConversion.textToBigint(texto))
+      console.log("Cegado: "+blindedMessage)
+      let json = {
+        text: bigintConversion.bigintToHex(blindedMessage)
+      }
+
+      this.http.post(url,json).toPromise().then((data:any) => {
+        console.log("Firma (en hex): "+data['signed'])
+        let signed = bigintConversion.hexToBigint(data['signed'])
+        console.log("Firma (en bigint): "+signed)
+        let descegado = this.unblinding(signed)
+        console.log("Descegado: "+descegado)
+        const verificado = this.publicKey.verify(descegado)
+        const textox = bigintConversion.bigintToText(verificado)
+        console.log("texto: "+texto)
+        if (textox == texto){
+          alert("firma verificada OK")
+        }
+        else alert("verificación de firma errónea")
+      })
+    
+    }
+
+    blinding(m: bigint):bigint {
+     
+      const bm = m * this.publicKey.encrypt(this.r) % this.publicKey.n
+      return bm
+    }
+    
+    unblinding (signedBlindedMessage: bigint): bigint {
+      const s = signedBlindedMessage * bcu.modInv(this.r,this.publicKey.n) % this.publicKey.n
+      return s
     }
 
   }
