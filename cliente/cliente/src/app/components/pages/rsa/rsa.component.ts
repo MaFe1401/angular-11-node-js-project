@@ -8,6 +8,7 @@ import * as bigintConversion from 'bigint-conversion'
 import * as bcu from 'bigint-crypto-utils'
 import { listenerCount } from 'process';
 import * as myrsa from 'my-rsa';
+import * as shamir from 'shamirs-secret-sharing-ts'
 
 @Component({
   selector: 'app-rsa',
@@ -95,7 +96,7 @@ export class RsaComponent implements OnInit {
       })
     
     }
-
+    //Firma ciega
     blinding(m: bigint):bigint {
      
       const bm = m * this.publicKey.encrypt(this.r) % this.publicKey.n
@@ -105,6 +106,11 @@ export class RsaComponent implements OnInit {
     unblinding (signedBlindedMessage: bigint): bigint {
       const s = signedBlindedMessage * bcu.modInv(this.r,this.publicKey.n) % this.publicKey.n
       return s
+    }
+    //Secret sharing
+    createSecret(secret: String):any[] {
+      const shares = shamir.split (secret, {shares:3, threshold:2} )
+      return shares
     }
 
   }

@@ -1,18 +1,22 @@
 <div class="container">
-    <p>La votación consiste en repartir 10 puntos entre los tres posibles candidatos.</p>
+    <p>La votación consiste en asignar a sus elegidos las puntuaciones de 6, 4, 3, 2, 1.</p>
     <div class="papeleta">
         <h1>VOTO</h1>
         <input type="number" pattern="[0-9]" id="c1" name="c1" #c1 placeholder="CANDIDATO 1">
         <input type="number" pattern="[0-9]" step = "1" id="c2" name="c2" #c2 placeholder="CANDIDATO 2">
         <input type="number" pattern="[0-9]" step = "1" id="c3" name="c3" #c3 placeholder="CANDIDATO 3">
-        <button type="button" (click)="clickme(c1.value, c2.value, c3.value)">VOTAR!</button>
+        <input type="number" pattern="[0-9]" step = "1" id="c4" name="c4" #c4 placeholder="CANDIDATO 4">
+        <input type="number" pattern="[0-9]" step = "1" id="c5" name="c5" #c5 placeholder="CANDIDATO 5">
+        <button type="button" (click)="clickme(c1.value, c2.value, c3.value, c4.value, c5.value)">VOTAR!</button>
     </div>
 </div>
 <div class="container">
     <p> Test RSA & Blind Signature: </p>
-    <button type="button" class="btn btn-primary-outline pull-right" (click)="rsaClick();"><i class="fa fa-plus"></i> RSA</button>
+    <a href="./rsa"><button type="button" class="btn btn-primary-outline pull-right" href="./rsa"><i class="fa fa-plus"></i> RSA</button></a>
 </div>
- 
-
+<div class="container">
+    <p> Resultado: </p>
+    <a href="./resultado"><button type="button" class="btn btn-primary-outline pull-right" href="./resultado"><i class="fa fa-plus"></i> Resultado</button></a>
+</div>
 
 

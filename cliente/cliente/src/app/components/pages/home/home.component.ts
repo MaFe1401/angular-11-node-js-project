@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http'
 import * as paillierBigint from 'paillier-bigint'
 import * as bigintConversion from 'bigint-conversion'
 import { listenerCount } from 'process';
+import { ValueConverter } from '@angular/compiler/src/render3/view/template';
 
 @Component({
   selector: 'app-home',
@@ -32,7 +33,10 @@ export class HomeComponent implements OnInit{
     rsaClick(){
         this.router.navigateByUrl('/rsa');
     };
-  async clickme(c1:string, c2:string, c3:string) {
+    resultClick(){
+      this.router.navigateByUrl('/resultado');
+  };
+  async clickme(c1:string, c2:string, c3:string, c4:string, c5:string) {
     if(c1.includes("-") || c1.includes(".") || c1.includes(",") || c2.includes("-") || c2.includes(".") || c2.includes(",") ||c3.includes("-") || c3.includes(".") || c3.includes(",")){
       alert("No se permiten números decimales ni negativos.")
     }
@@ -40,22 +44,30 @@ export class HomeComponent implements OnInit{
       let vot1 = parseInt(c1, 10);
       let vot2 = parseInt(c2, 10);
       let vot3 = parseInt(c3, 10);
-      if(isNaN(vot1) || isNaN(vot2)|| isNaN(vot3)){
-        alert("Introduce los tres valores correctamente.")
+      let vot4 = parseInt(c4, 10);
+      let vot5 = parseInt(c5, 10);
+      if(isNaN(vot1) || isNaN(vot2)|| isNaN(vot3)|| isNaN(vot4)|| isNaN(vot5)){
+        alert("Introduce los cinco valores correctamente.")
       }
       else{
-        if(vot1+vot2+vot3!=10){
-          alert("La suma de los tres valores debe de ser 10.")
+        let votos = '' + vot1 + '' + vot2 + '' + vot3 + '' + vot4 + '' + vot5
+        if ((votos.length != 5) || !(votos.includes("1"))|| !(votos.includes("2"))|| !(votos.includes("3"))|| !(votos.includes("4"))|| !(votos.includes("6"))){
+            alert("eRROR FATAL: ALGO PASÓ")
         }
         else{
           alert("Voto ok")
           let enc1 = this.publicKey.encrypt(BigInt(vot1))
           let enc2 = this.publicKey.encrypt(BigInt(vot2))
           let enc3 = this.publicKey.encrypt(BigInt(vot3))
+          let enc4 = this.publicKey.encrypt(BigInt(vot4))
+          let enc5 = this.publicKey.encrypt(BigInt(vot5))
+          
           let json = {
-            voto1: bigintConversion.bigintToBase64(enc1),
-            voto2: bigintConversion.bigintToBase64(enc2),
-            voto3: bigintConversion.bigintToBase64(enc3)
+            voto1: bigintConversion.bigintToHex(enc1),
+            voto2: bigintConversion.bigintToHex(enc2),
+            voto3: bigintConversion.bigintToHex(enc3),
+            voto4: bigintConversion.bigintToHex(enc4),
+            voto5: bigintConversion.bigintToHex(enc5),
           }
           let url = 'http://localhost:3000/vote'
           this.http.post(url,json).toPromise().then((data:any) => {

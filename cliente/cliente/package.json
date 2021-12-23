@@ -22,6 +22,7 @@
     "my-rsa": "file:../../moduleAdapter-skel",
     "paillier-bigint": "^3.2.5",
     "rxjs": "~6.6.0",
+    "shamirs-secret-sharing-ts": "^1.0.2",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
   },
