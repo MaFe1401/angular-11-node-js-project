@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 //import * as myRsa from 'my-rsa' 
 import { FormControl, FormGroup, FormBuilder, Validators, PatternValidator} from '@angular/forms';
-import { Router } from '@angular/router';
+import { Data, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http'
 import * as paillierBigint from 'paillier-bigint'
 import * as bigintConversion from 'bigint-conversion'
@@ -18,6 +18,11 @@ import * as shamir from 'shamirs-secret-sharing-ts'
 export class RsaComponent implements OnInit {
   publicKey : myrsa.PublicKey;
   r : bigint;
+  parte1 : string = ""
+  parte2 : string = ""
+  parte0 : string = ""
+  recovered: any
+  parts: any [] = []
   constructor(private router: Router, private http: HttpClient) { 
     this.publicKey = new myrsa.PublicKey(BigInt(0), BigInt(0))
     this.r = BigInt(0)
@@ -107,12 +112,25 @@ export class RsaComponent implements OnInit {
       const s = signedBlindedMessage * bcu.modInv(this.r,this.publicKey.n) % this.publicKey.n
       return s
     }
-    //Secret sharing
-    createSecret(secret: String):any[] {
-      const shares = shamir.split (secret, {shares:3, threshold:2} )
-      return shares
+    partsClick ():void {
+      this.http.get('http://localhost:3000/getSecret').toPromise().then((data:any) => {
+        this.parte0=data.share0
+        this.parte1=data.share1
+        this.parte2=data.share2
+        console.log(data.share0)
+      })
     }
+    joinParts (part1:string, part2:string): void {
 
+      //let partes1 = part1.split(",").map(Number)
+      //let partes2 = part1.split(",").map(Number)
+      let buff1 = Buffer.from(part1,"hex")
+      let buff2 = Buffer.from(part2, "hex")
+      console.log(buff1)
+     //this.recovered = shamir.combine(this.parts.slice(0,2)).toString()
+     this.recovered = shamir.combine([buff1,buff2])
+    }
+  
   }
 
 

@@ -13,3 +13,23 @@
     <input type="text" id="texto" name="texto" #texto placeholder="texto">
     <button type="button" (click)="askRSASignedBlindedMsg(texto.value)">Send </button>
 </div>
+<p>Shamir's secret sharing parts</p>
+<button type="button" (click)="partsClick()">Partes</button>
+<div ng-init="parte0=Parte 1: 'parte0'">
+    Parte 1: {{parte0}}
+</div>
+<div ng-init="parte1='parte1'">
+    Parte 2:  {{parte1}}
+</div>
+<div ng-init="parte2='parte2'">
+     Parte 3: {{parte2}}
+</div>
+<div>
+    <h1>Introduce the parts and reveal the secret</h1>
+    <input type="text" id="part1" name="part1" #part1 placeholder="part1">
+    <input type="text" id="part2" name="part2" #part2 placeholder="part2">
+   <button type="button" (click)="joinParts(part1.value, part2.value)">Reveal</button>
+</div>
+<div ng-init="recovered='recovered'">
+    Secret: {{recovered}}
+</div>
