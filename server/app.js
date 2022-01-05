@@ -33,13 +33,14 @@ const privateKey = new paillierBigint.PrivateKey(7364306374658860784793416818544
 //claves RSA
 const pubKey = new myrsa.PublicKey(65537n, 42770351785584271670092515465841059433591403554961894929818576092270394762619167415086469122894755666157145496110139614081729552931510763282318796748568400777958348255231678598398932732948019362655165441540012002681181083883123927937282180553905079331971954009872835367773034876863749366962436882044548707576117837417237548620024898506018022494695863059544170213152681036173267627244969242884912011477520018612975218766032990601236563541543911534526478302779780324897079211829038648437593487135772037820036095065180165034658483606541825227727251717138542129080319144627737949542042187805393811756613307552344846036569n)
 const privKey = new myrsa.PrivateKey(38078711048495828057533272691775548710365003198573578976227997586581518739174865806116625728712989663990373764545744025549548437591708348200203505694271465715432712879690220529767626334773502506556656441139762581937555180774410103411577287195923731157390475190626061584125319117372568900979969592650492515519845393060950261250715174142769510664115270252735136303391814434359725163198976137082286301397912758508702118130957282660842688127997216992525035654374088605112746347297125366447715080190676622347467277807634532167839632725539857344522220533446606824778646117643017956855517997810400828325782007852749201738753n,pubKey)
+let pubKeyClient = new myrsa.PublicKey(0n, 0n)
+//nonce
+let nonce = 0n;
+//Codigo de votacion
+const code = "balondeoro2022"
 //Crear secreto
 const secret =Buffer.from('ME ASESINÓ ENCARNA') 
 const shares = shamir.split(secret, { shares: 3, threshold: 2 })
-console.log("Primera parte: "+shares[0])
-console.log("Segunda parte: "+shares[1])
-console.log("Tercera parte: "+shares[2])
-console.log(typeof(shares[0]))
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
@@ -136,6 +137,62 @@ app.post('/signText', (req,res)=>{
   //console.log(bigintConversion.bigintToBase64(signed))
   res.json(response)
 })
+app.post('/register', (req,res)=>{
+  const ciegoHex = req.body.ciegoHex
+  const codigo = req.body.codigo
+  console.log("codigo recibido: "+codigo)
+  console.log("codigo esperado: "+code)
+  if (codigo == code){
+    console.log("firma: "+ciegoHex)
+    ciegoBigint = bigintConversion.hexToBigint(ciegoHex)
+    const firma = privKey.sign(ciegoBigint)
+    
+    let certificado = {
+      n:bigintConversion.bigintToHex(pubKey.n),
+      e:bigintConversion.bigintToHex(pubKey.e),
+      sign: bigintConversion.bigintToHex(firma),
+      message: "OK"
+    }
+    res.json(certificado)
+  }
+  else {
+    let certif = {
+      message: "NO"
+    }
+    res.json(certif)
+  }
+  
+})
+app.post('/login', (req,res)=>{
+  const signed = bigintConversion.hexToBigint(req.body.sign)
+  const n = pubKey.verify(signed)
+  const e = 65537n
+  this.pubKeyClient = new myrsa.PublicKey(e,n)
+  this.nonce = BigInt(Math.floor(Math.random() * 1000));
+  console.log("nonce: "+this.nonce)
+  const nonceEncrypted = this.pubKeyClient.encrypt(this.nonce)
+  let response = {
+    nonce: bigintConversion.bigintToHex(nonceEncrypted)
+  }
+  res.json(response)
+})
+app.post('/checkNonce', (req,res)=>{
+  const nonce = bigintConversion.hexToBigint(req.body.nonce)
+  console.log("Nonce recibido: "+nonce)
+  console.log("Nonce guardado: "+this.nonce)
+  let reply
+  if(this.nonce === nonce){
+     reply = "OK"
+  }
+  else {
+    reply = "INTRUSO DETECTADO"
+  }
+  let response = {
+    res: reply
+  }
+  res.json(response)
+})
+
 //Send secret
 app.get('/getSecret', (req,res)=>{
   let response = {
