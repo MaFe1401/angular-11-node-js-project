@@ -8,7 +8,7 @@ const database = require('./database')
 const cors = require('cors');
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
-
+const jwt = require('passport-jwt')
 //express, cors
 const app = express()
 const port = 3000
