@@ -20,6 +20,7 @@
     "@angular/router": "^12.2.14",
     "bigint-conversion": "^2.2.1",
     "my-rsa": "file:../../moduleAdapter-skel",
+    "ngx-cookie-service": "^13.1.2",
     "paillier-bigint": "^3.2.5",
     "rxjs": "~6.6.0",
     "shamirs-secret-sharing-ts": "^1.0.2",

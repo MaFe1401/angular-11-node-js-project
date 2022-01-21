@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 //import * as myRsa from 'my-rsa' 
 import { FormControl, FormGroup, FormBuilder, Validators, PatternValidator} from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http'
+import { HttpClient, HttpHeaders } from '@angular/common/http'
 import * as paillierBigint from 'paillier-bigint'
 import * as bigintConversion from 'bigint-conversion'
 import { listenerCount } from 'process';
 import { ValueConverter } from '@angular/compiler/src/render3/view/template';
-
+import { CookieService } from 'ngx-cookie-service';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -17,8 +17,9 @@ import { ValueConverter } from '@angular/compiler/src/render3/view/template';
  
 export class HomeComponent implements OnInit{
   publicKey : paillierBigint.PublicKey;
-  constructor(private router: Router, private http: HttpClient) { 
+  constructor(private router: Router, private http: HttpClient, private cookieService: CookieService) { 
   this.publicKey = new paillierBigint.PublicKey(BigInt(0), BigInt(0))
+  
   }
 
   ngOnInit(): void {
@@ -55,7 +56,7 @@ export class HomeComponent implements OnInit{
             alert("eRROR FATAL: ALGO PASÓ")
         }
         else{
-          alert("Voto ok")
+          
           let enc1 = this.publicKey.encrypt(BigInt(vot1))
           let enc2 = this.publicKey.encrypt(BigInt(vot2))
           let enc3 = this.publicKey.encrypt(BigInt(vot3))
@@ -70,7 +71,17 @@ export class HomeComponent implements OnInit{
             voto5: bigintConversion.bigintToHex(enc5),
           }
           let url = 'http://localhost:3000/vote'
-          this.http.post(url,json).toPromise().then((data:any) => {
+          let headers = new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Authorization': this.cookieService.get("certificado_sign") });
+        let options = { headers: headers};
+          this.http.post(url,json,options).toPromise().then((data:any) => {
+            const mensaje = data.message
+            console.log(mensaje)
+            if(mensaje != "OK"){
+              alert("No estás autorizado para votar")
+            }
+            else alert("Voto correcto")
           })
         }
       }
