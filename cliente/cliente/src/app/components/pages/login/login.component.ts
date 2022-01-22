@@ -35,6 +35,9 @@ export class LoginComponent implements OnInit {
       this.r = bcu.randBetween(this.publicKey.n, BigInt(128))
       }
   }
+  //Registro. Se ciega la clave pública del cliente y se envia en hex al server junto con el código secreto de votación.
+  //El servidor firma esa clave pública y el cliente desciega la firma. Se crea un certificado junto con la clave pública del server.
+  //La firma descegada se utiliza como token de autenticación.
   register(codigo: string): void{
     const ciego = this.blinding(this.publicKey.n)
     let url = 'http://localhost:3000/register'
@@ -55,6 +58,7 @@ export class LoginComponent implements OnInit {
         }
         this.cookieService.set('certificado_sign', this.cert.sign)
         this.cookieService.set('certificado_n', this.cert.n)
+        this.cookieService.set('codigo', codigo)
         alert("Certificate obtained")
        // console.log(this.cert)
       }
@@ -64,6 +68,7 @@ export class LoginComponent implements OnInit {
      
     })
   }
+  //Login. Se envia el certificado y se recibe un nonce, cifrado con la clave pública del cliente. El cliente desencripta el nonce y lo envia otra vez.
   login(){
     let url = 'http://localhost:3000/login'
     let urlNonce = 'http://localhost:3000/checkNonce'

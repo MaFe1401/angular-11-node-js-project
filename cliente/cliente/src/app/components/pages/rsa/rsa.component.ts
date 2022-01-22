@@ -30,37 +30,38 @@ export class RsaComponent implements OnInit {
 
   ngOnInit(): void {
     var req = new XMLHttpRequest();
+    //Conseguir clave pública del servidor
     req.open('GET', 'http://localhost:3000/getRSAkey', false);
     req.send(null);
     if(req.status == 200){
       let json = JSON.parse(req.response)
-      //console.log(json['n'])
-      //console.log(bigintConversion.hexToBigint(json['n']))
       this.publicKey = new myrsa.PublicKey(bigintConversion.hexToBigint(json['e']), bigintConversion.hexToBigint(json['n']))
-      console.log(bigintConversion.hexToBigint(json['n'])+"$$$$"+bigintConversion.hexToBigint(json['e']))
+      console.log("Clave pública del servidor: "+"Public modulous bigint: "+bigintConversion.hexToBigint(json['n'])+"Exponente público bigint: "+bigintConversion.hexToBigint(json['e']))
       this.r = bcu.randBetween(this.publicKey.n, BigInt(128))
       }
     }
     clickEncrypt(message: string): void {
-      console.log(message)
+      //Encriptar con la clave pública del servidor
+      console.log("Texto a enviar: "+message)
       let encryptedMessage = this.publicKey.encrypt(bigintConversion.textToBigint(message))
+      console.log("Mensaje encriptado RSA bigint: "+encryptedMessage)
       let json = {
         message: bigintConversion.bigintToBase64(encryptedMessage)
       }
-      console.log(encryptedMessage)
-      console.log(bigintConversion.bigintToBase64(encryptedMessage))
+      console.log("Mensaje encriptado RSA en base64: "+bigintConversion.bigintToBase64(encryptedMessage))
       let url = 'http://localhost:3000/decryptRSA'
       this.http.post(url,json).toPromise().then((data:any) => {
       })
 
     }
     askRSASignedMsg(text: string):void {
+      //El servidor firma con su clave privada el texto y el cliente verifica con la clave pública del servidor
       let url = 'http://localhost:3000/signText'
       let textBigint = bigintConversion.textToBigint(text)
       let json = {
         text:bigintConversion.bigintToHex(textBigint)
       }
-
+      console.log("Texto enviado en base64: "+bigintConversion.bigintToHex(textBigint))
       this.http.post(url,json).toPromise().then((data:any) => {
         console.log("Firma (en hex): "+data['signed'])
         let signed = bigintConversion.hexToBigint(data['signed'])
@@ -76,24 +77,27 @@ export class RsaComponent implements OnInit {
       })
     
     }
+    //Pedirle al servidor que firme un texto cegado
     askRSASignedBlindedMsg(texto: string):void {
       let url = 'http://localhost:3000/signText'
-      
+      console.log("Mensaje a cegar: "+texto)
       const blindedMessage = this.blinding(bigintConversion.textToBigint(texto))
-      console.log("Cegado: "+blindedMessage)
+      console.log("Mensaje cegado: "+blindedMessage)
       let json = {
         text: bigintConversion.bigintToHex(blindedMessage)
       }
-
+      console.log("Mensaje cegado y en hex: "+bigintConversion.bigintToHex(blindedMessage))
       this.http.post(url,json).toPromise().then((data:any) => {
-        console.log("Firma (en hex): "+data['signed'])
+        console.log("Mensaje firmado por el servidor en hex: "+data['signed'])
         let signed = bigintConversion.hexToBigint(data['signed'])
-        console.log("Firma (en bigint): "+signed)
+        console.log("Mensaje firmado por el servidor en bigint: "+signed)
         let descegado = this.unblinding(signed)
-        console.log("Descegado: "+descegado)
+        console.log("Mensaje descegado en bigint: "+descegado)
         const verificado = this.publicKey.verify(descegado)
+        console.log("Mensaje verificado en bigint: "+verificado)
         const textox = bigintConversion.bigintToText(verificado)
-        console.log("texto: "+texto)
+        console.log("Mensaje verificado en texto: "+textox)
+        console.log("texto original: "+texto)
         if (textox == texto){
           alert("firma verificada OK")
         }
@@ -101,34 +105,33 @@ export class RsaComponent implements OnInit {
       })
     
     }
-    //Firma ciega
+    //Cegar con la clave pública RSA del servidor y un número random r
     blinding(m: bigint):bigint {
      
       const bm = m * this.publicKey.encrypt(this.r) % this.publicKey.n
       return bm
     }
-    
+    //Descegar
     unblinding (signedBlindedMessage: bigint): bigint {
       const s = signedBlindedMessage * bcu.modInv(this.r,this.publicKey.n) % this.publicKey.n
       return s
     }
+    //Obtener secreto del servidor
     partsClick ():void {
       this.http.get('http://localhost:3000/getSecret').toPromise().then((data:any) => {
         this.parte0=data.share0
         this.parte1=data.share1
         this.parte2=data.share2
-        console.log(data.share0)
+        console.log("Parte 0: "+data.share0)
+        console.log("Parte 1: "+data.share1)
+        console.log("Parte 2: "+data.share2)
       })
     }
+    //Unir partes para revelar el secreto
     joinParts (part1:string, part2:string): void {
-
-      //let partes1 = part1.split(",").map(Number)
-      //let partes2 = part1.split(",").map(Number)
       let buff1 = Buffer.from(part1,"hex")
       let buff2 = Buffer.from(part2, "hex")
-      console.log(buff1)
-     //this.recovered = shamir.combine(this.parts.slice(0,2)).toString()
-     this.recovered = shamir.combine([buff1,buff2])
+      this.recovered = shamir.combine([buff1,buff2])
     }
   
   }

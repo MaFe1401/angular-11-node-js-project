@@ -28,6 +28,7 @@ export class HomeComponent implements OnInit{
     req.send(null);
     if(req.status == 200){
       let json = JSON.parse(req.response)
+      console.log("Clave pública server paillier: n: "+bigintConversion.hexToBigint(json['n'])+" g: "+bigintConversion.hexToBigint(json['g']))
       this.publicKey = new paillierBigint.PublicKey(bigintConversion.hexToBigint(json['n']), bigintConversion.hexToBigint(json['g']))
       }
     }
@@ -52,8 +53,9 @@ export class HomeComponent implements OnInit{
       }
       else{
         let votos = '' + vot1 + '' + vot2 + '' + vot3 + '' + vot4 + '' + vot5
+        console.log("Los votos son "+votos)
         if ((votos.length != 5) || !(votos.includes("1"))|| !(votos.includes("2"))|| !(votos.includes("3"))|| !(votos.includes("4"))|| !(votos.includes("6"))){
-            alert("eRROR FATAL: ALGO PASÓ")
+            alert("Los valores introducidos no son correctos")
         }
         else{
           
@@ -69,6 +71,7 @@ export class HomeComponent implements OnInit{
             voto3: bigintConversion.bigintToHex(enc3),
             voto4: bigintConversion.bigintToHex(enc4),
             voto5: bigintConversion.bigintToHex(enc5),
+            codigo: this.cookieService.get("codigo")
           }
           let url = 'http://localhost:3000/vote'
           let headers = new HttpHeaders({
@@ -78,10 +81,15 @@ export class HomeComponent implements OnInit{
           this.http.post(url,json,options).toPromise().then((data:any) => {
             const mensaje = data.message
             console.log(mensaje)
-            if(mensaje != "OK"){
+            if(mensaje == "NO"){
               alert("No estás autorizado para votar")
             }
-            else alert("Voto correcto")
+            if(mensaje == "OK"){
+              alert("Voto correcto")
+            }
+            if (mensaje == "Usado"){
+              alert("Ya votaste antes")
+            }
           })
         }
       }
