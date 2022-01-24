@@ -8,6 +8,9 @@ import * as bigintConversion from 'bigint-conversion'
 import { listenerCount } from 'process';
 import { ValueConverter } from '@angular/compiler/src/render3/view/template';
 import { CookieService } from 'ngx-cookie-service';
+import * as myrsa from 'my-rsa'
+import * as CryptoJS from 'crypto-js'
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -17,18 +20,29 @@ import { CookieService } from 'ngx-cookie-service';
  
 export class HomeComponent implements OnInit{
   publicKey : paillierBigint.PublicKey;
+  publicRSA : myrsa.PublicKey;
+  privateRSA : myrsa.PrivateKey;
+
   constructor(private router: Router, private http: HttpClient, private cookieService: CookieService) { 
   this.publicKey = new paillierBigint.PublicKey(BigInt(0), BigInt(0))
-  
+  this.publicRSA = new myrsa.PublicKey(BigInt(0), BigInt(0))
+  this.privateRSA = new myrsa.PrivateKey(BigInt(0), this.publicRSA)
   }
 
   ngOnInit(): void {
+    //Recuperamos el par de claves del cliente del localstorage
+    let pub_n = bigintConversion.hexToBigint(this.cookieService.get("pubkey_n"))
+    let pub_e = BigInt(65537)
+    this.publicRSA = new myrsa.PublicKey(pub_e, pub_n)
+    let priv_d = bigintConversion.hexToBigint(this.cookieService.get("privkey_d"))
+    this.privateRSA = new myrsa.PrivateKey(priv_d, this.publicRSA)
+    
     var req = new XMLHttpRequest();
     req.open('GET', 'http://localhost:3000/getPkey', false);
     req.send(null);
     if(req.status == 200){
       let json = JSON.parse(req.response)
-      console.log("Clave pública server paillier: n: "+bigintConversion.hexToBigint(json['n'])+" g: "+bigintConversion.hexToBigint(json['g']))
+      console.log("Clave pública server paillier: n: "+json['n']+" g: "+json['g'])
       this.publicKey = new paillierBigint.PublicKey(bigintConversion.hexToBigint(json['n']), bigintConversion.hexToBigint(json['g']))
       }
     }
@@ -64,32 +78,32 @@ export class HomeComponent implements OnInit{
           let enc3 = this.publicKey.encrypt(BigInt(vot3))
           let enc4 = this.publicKey.encrypt(BigInt(vot4))
           let enc5 = this.publicKey.encrypt(BigInt(vot5))
-          
+          let jsontemporal = {
+            voto1: bigintConversion.bigintToHex(enc1),
+            voto2: bigintConversion.bigintToHex(enc2),
+            voto3: bigintConversion.bigintToHex(enc3),
+            voto4: bigintConversion.bigintToHex(enc4),
+            voto5: bigintConversion.bigintToHex(enc5),
+          }
+          //Firmamos los votos con la clave privada del cliente
+          let hashvotes = CryptoJS.SHA256(JSON.stringify(jsontemporal)).toString(CryptoJS.enc.Hex)
+          let sign = this.privateRSA.sign(bigintConversion.hexToBigint(hashvotes))
+          console.log("Firma de los votos encriptados (Paillier): " + sign )
           let json = {
             voto1: bigintConversion.bigintToHex(enc1),
             voto2: bigintConversion.bigintToHex(enc2),
             voto3: bigintConversion.bigintToHex(enc3),
             voto4: bigintConversion.bigintToHex(enc4),
             voto5: bigintConversion.bigintToHex(enc5),
-            codigo: this.cookieService.get("codigo")
+            sign: bigintConversion.bigintToHex(sign),
+            certificado_sign: this.cookieService.get("certificado_sign"),
+            certificado_n: this.cookieService.get("certificado_n"),
+            certificado_e: this.cookieService.get("certificado_e")
           }
           let url = 'http://localhost:3000/vote'
-          let headers = new HttpHeaders({
-            'Content-Type': 'application/json',
-            'Authorization': this.cookieService.get("certificado_sign") });
-        let options = { headers: headers};
-          this.http.post(url,json,options).toPromise().then((data:any) => {
+          this.http.post(url,json).toPromise().then((data:any) => {
             const mensaje = data.message
-            console.log(mensaje)
-            if(mensaje == "NO"){
-              alert("No estás autorizado para votar")
-            }
-            if(mensaje == "OK"){
-              alert("Voto correcto")
-            }
-            if (mensaje == "Usado"){
-              alert("Ya votaste antes")
-            }
+            alert(mensaje)
           })
         }
       }

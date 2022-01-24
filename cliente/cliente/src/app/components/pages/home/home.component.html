@@ -1,23 +1,32 @@
-<div class="container">
-    <p>La votación consiste en asignar a los candidatos las puntuaciones de 6, 4, 3, 2, 1.</p>
-    <div class="papeleta">
-        <h1>VOTO</h1>
-        <input type="number" pattern="[0-9]" id="c1" name="c1" #c1 placeholder="MESSI">
-        <input type="number" pattern="[0-9]" step = "1" id="c2" name="c2" #c2 placeholder="C.RONALDO">
-        <input type="number" pattern="[0-9]" step = "1" id="c3" name="c3" #c3 placeholder="LEWANDOWSKI">
-        <input type="number" pattern="[0-9]" step = "1" id="c4" name="c4" #c4 placeholder="JORGINHO">
-        <input type="number" pattern="[0-9]" step = "1" id="c5" name="c5" #c5 placeholder="BENZEMA">
-        <button type="button" (click)="clickme(c1.value, c2.value, c3.value, c4.value, c5.value)">VOTAR!</button>
-    </div>
-</div>
-<br>
-<div class="container">
-    <a href="./resultado"><button type="button" class="btn btn-primary-outline pull-right" href="./resultado"><i class="fa fa-plus"></i>RECUENTO</button></a>
-</div>
-<div class="container">
-    <p> Test RSA, Blind Signature & Shamir's secret sharing: </p>
-    <a href="./rsa"><button type="button" class="btn btn-primary-outline pull-right" href="./rsa"><i class="fa fa-plus"></i>Modulos</button></a>
-</div>
 
+    <div class="container">
+        <p>La votación consiste en asignar a los candidatos las puntuaciones de 6, 4, 3, 2, 1.</p>
+        <div class="papeleta">
+            <h1>VOTO</h1>
+            <input type="number" pattern="[0-9]" id="c1" name="c1" #c1 placeholder="MESSI">
+            <input type="number" pattern="[0-9]" step = "1" id="c2" name="c2" #c2 placeholder="C.RONALDO">
+            <input type="number" pattern="[0-9]" step = "1" id="c3" name="c3" #c3 placeholder="LEWANDOWSKI">
+            <input type="number" pattern="[0-9]" step = "1" id="c4" name="c4" #c4 placeholder="JORGINHO">
+            <input type="number" pattern="[0-9]" step = "1" id="c5" name="c5" #c5 placeholder="BENZEMA">
+            <button type="button" (click)="clickme(c1.value, c2.value, c3.value, c4.value, c5.value)">VOTAR!</button>
+        </div>
+    </div>
+    <div class="container">
+        <a href="./resultado"><div class="container-button">
+            RECUENTO
+        </div></a>
+    </div>
+    
+    
+    
+    <div class="container">
+        <a href="./rsa"><div class="container-button">
+            MÓDULOS
+        </div></a>
+    </div>
+
+
+<img src="/assets/images/mesi.png" id="mesi" alt="">
+<img src="/assets/images/cris.png" id="cris" alt="">
 
 

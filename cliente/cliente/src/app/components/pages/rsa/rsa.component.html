@@ -1,35 +1,40 @@
-<div>
+<div class="globalmodulos">
+
     <h1>Enviar mensaje al servidor cifrado con la clave pública del servidor</h1>
-    <input type="text" id="message" name="message" #message placeholder="Mensaje">
-    <button type="button" (click)="clickEncrypt(message.value)">Enviar</button>
-</div>
-<div>
+    <div>
+        <input type="text" id="message" name="message" #message placeholder="Mensaje">
+        <button type="button" (click)="clickEncrypt(message.value)">Enviar</button>
+    </div>
+
+    
     <h1>Pedir al servidor que firme este texto con la clave privada del servidor</h1>
-    <input type="text" id="text" name="text" #text placeholder="texto">
-    <button type="button" (click)="askRSASignedMsg(text.value)">Enviar</button>
-</div>
-<div>
-    <h1>Firma ciega</h1>
-    <input type="text" id="texto" name="texto" #texto placeholder="texto">
-    <button type="button" (click)="askRSASignedBlindedMsg(texto.value)">Enviar</button>
-</div>
-<p>Shamir's secret sharing partes</p>
-<button type="button" (click)="partsClick()">Partes</button>
-<div ng-init="parte0=Parte 1: 'parte0'">
-    Parte 1: {{parte0}}
-</div>
-<div ng-init="parte1='parte1'">
-    Parte 2:  {{parte1}}
-</div>
-<div ng-init="parte2='parte2'">
-     Parte 3: {{parte2}}
-</div>
-<div>
-    <h1>Introducir las partes para revelar el secreto</h1>
-    <input type="text" id="part1" name="part1" #part1 placeholder="parte1">
-    <input type="text" id="part2" name="part2" #part2 placeholder="parte2">
-   <button type="button" (click)="joinParts(part1.value, part2.value)">Revelar</button>
-</div>
-<div ng-init="recovered='recovered'">
-    Secreto: {{recovered}}
+    <div>
+        <input type="text" id="text" name="text" #text placeholder="Texto">
+        <button type="button" (click)="askRSASignedMsg(text.value)">Enviar</button>
+    </div>
+    <div>
+        <h1>Firma ciega</h1>
+        <input type="text" id="texto" name="texto" #texto placeholder="Texto">
+        <button type="button" (click)="askRSASignedBlindedMsg(texto.value)">Enviar</button>
+    </div>
+    <h1>Shamir's secret sharing</h1>
+    <button style="margin-bottom: 10px;"type="button" (click)="partsClick()">Generar partes</button>
+    <div ng-init="parte0=Parte 1: 'parte0'">
+        <p>Parte 1: {{parte0}}</p>
+    </div>
+    <div ng-init="parte1='parte1'">
+        <p>Parte 2: {{parte1}}</p>
+    </div>
+    <div ng-init="parte2='parte2'">
+         <p>Parte 3: {{parte2}}</p>
+    </div>
+    <div>
+        <p style="font-size: 20px;;">Introducir dos partes para revelar el secreto:</p>
+        <input type="text" id="part1" name="part1" #part1 placeholder="Parte 1">
+        <input type="text" id="part2" name="part2" #part2 placeholder="Parte 2">
+       <button type="button" (click)="joinParts(part1.value, part2.value)">Revelar</button>
+    </div>
+    <div ng-init="recovered='recovered'">
+        <p>Secreto: {{recovered}}</p>
+    </div>
 </div>

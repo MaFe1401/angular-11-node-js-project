@@ -1,6 +1,12 @@
-<div>
-    <h1>Introduce the votation code</h1>
-    <input type="text" id="text" name="text" #text placeholder="text">
-    <button type="button" (click)="register(text.value)">Get certificate </button>
-    <button type="button" (click)="login()">Login</button>
+<div class = "container-login">
+    <div class="panel">
+        <h1>Introduce el código de votación:</h1>
+        <div class="form-div">
+            <input type="text" id="text" name="text" #text placeholder="Código">
+            <button type="button" (click)="register(text.value)">Obtener certificado</button>
+        </div>
+    </div>
 </div>
+
+<img src="/assets/images/mesi.png" id="mesi" alt="">
+<img src="/assets/images/cris.png" id="cris" alt="">

@@ -1,17 +1,33 @@
-<br><br>
-<button type="button" (click)="resultClick()">REALIZAR RECUENTO</button>
-<div ng-init="resultado1='result1'">
-    Lionel Messi: {{resultado1}}
-</div>
-<div ng-init="resultado2='result2'">
-    Cristiano Ronaldo: {{resultado2}}
-</div>
-<div ng-init="resultado3='result3'">
-    Robert Lewandowski: {{resultado3}}
-</div>
-<div ng-init="resultado4='result4'">
-    Jorginho: {{resultado4}}
-</div>
-<div ng-init="resultado5='result5'">
-    Karim Benzema: {{resultado5}}
+<div class="globalresultado">
+    <button type="button" id="boton-recuento" (click)="resultClick()">REALIZAR RECUENTO</button>
+    <div class="panelresult">
+        <div class="entry">
+            <img src="/assets/images/messi.png" alt="">
+            <p id="resultname">MESSI</p>
+            <p id = "resultvalue">{{resultado1}}</p>
+        </div>
+        <div class="entry">
+            <img src="/assets/images/cristiano.png" alt="">
+            <p id="resultname">RONALDO</p>
+            <p id = "resultvalue">{{resultado2}}</p>
+        </div>
+        <div class="entry">
+            <img src="/assets/images/lewandowski.png" alt="">
+            <p id="resultname">LEWANDOWSKI</p>
+            <p id = "resultvalue">{{resultado3}}</p>
+            
+        </div>
+        <div class="entry">
+            <img src="/assets/images/jorginho.png" alt="">
+            <p id="resultname">JORGINHO</p>
+            <p id = "resultvalue">{{resultado4}}</p>
+            
+        </div>
+        <div class="entry">
+            <img src="/assets/images/benzema.png" alt="">
+            <p id="resultname">BENZEMA</p>
+            <p id = "resultvalue">{{resultado5}}</p>
+            
+        </div>
+    </div>
 </div>
